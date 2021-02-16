@@ -1,0 +1,10 @@
+SELECT u.user_id,u.FIRSTNAME,u.LASTNAME,cm.course_id,cm.COURSE_NAME,  
+gm.title,possible,average_score 
+FROM bblearn.gradebook_grade gg 
+JOIN bblearn.gradebook_main gm ON gm.pk1 = gg.gradebook_main_pk1 
+JOIN bblearn.course_users cu ON gg.course_users_pk1 = cu.pk1 
+JOIN bblearn.course_main cm ON cm.pk1 = gm.crsmain_pk1 
+JOIN bblearn.users u ON u.pk1 = cu.users_pk1 
+WHERE (cm.course_id like 'ENG-001-%-202020' or cm.course_id like 'ENG-003-%-202020') 
+AND cu.ROLE like 'S' 
+ORDER BY cm.COURSE_ID,u.user_id;
