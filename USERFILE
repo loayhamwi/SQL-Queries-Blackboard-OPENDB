@@ -1,0 +1,18 @@
+SELECT     'None' as SYSTEM_ROLE,
+           'faculty' AS INSTITUTION_ROLE,
+           U.BATCH_UID AS EXTERNAL_PERSON_KEY,
+           U.USER_ID,
+           substr(U.PASSWD,31,10) as PASSWD,
+           U.TITLE,
+           U.FIRSTNAME,
+           U.MIDDLENAME,
+           U.LASTNAME,
+          U.SUFFIX,
+           U.EMAIL,
+           'enabled' as ROW_STATUS,
+           U.M_PHONE,
+           'FACULTY' AS NEW_DATA_SOURCE_KEY,
+           U.AVAILABLE_IND
+
+
+from BBLEARN.USERS U
