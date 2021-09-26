@@ -1,3 +1,5 @@
+-- Get Blackboard Course Grades. Blackboard original experience
+
 SELECT u.user_id,u.FIRSTNAME,u.LASTNAME,cm.course_id,cm.COURSE_NAME,  
 gm.title,possible,average_score 
 FROM bblearn.gradebook_grade gg 
