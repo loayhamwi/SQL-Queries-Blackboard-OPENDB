@@ -8,7 +8,6 @@ where
 --CM.course_id='L6' and 
 GM.CALCULATED_IND='T'  AND
 CU.ROLE='S'AND 
-
 CU.ROW_STATUS=0 --and
 --cm.row_status=0 AND
 --CM.DATA_SRC_PK1='31445' AND 
@@ -16,23 +15,6 @@ CU.ROW_STATUS=0 --and
 AND GGC.SCORE>59
 and
 CM.course_id in
-('L0',
-'L1',
-'L2',
-'L3',
-'L4',
-'L5',
-'L6',
-'L7',
-'L8',
-'L9',
-'L10',
-'L11',
-'L12',
-'L13',
-'L14',
-'L15',
-'L16'
-) and CM.DATA_SRC_PK1=2
+('L0','L1','L2','L3','L4','L5','L6','L7','L8','L9','L10','L11','L12','L13','L14','L15','L16') and CM.DATA_SRC_PK1=2
 group by cm.course_id
 ;
