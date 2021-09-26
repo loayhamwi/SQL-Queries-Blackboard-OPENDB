@@ -1,0 +1,17 @@
+-- Blackboard TESTS
+SELECT     DS.BATCH_UID AS SEMESTER,
+           GM.CRSMAIN_PK1 AS CRN,
+           GM.TITLE      AS Assignments_Title,
+           GM.POSSIBLE   AS Assignments_Grade, 
+           GM.DATE_ADDED AS Assignments_Creation_Date,
+           CC.START_DATE AS Assignments_Display_Date, 
+           GM.DUE_DATE   AS Assignments_Due_Date,
+           CC.START_DATE AS Assignments_Start_Time,
+           CC.END_DATE   AS Assignments_End_Time
+FROM       BBLEARN.COURSE_CONTENTS CC 
+INNER JOIN BBLEARN.GRADEBOOK_MAIN GM ON CC.PK1=GM.COURSE_CONTENTS_PK1
+INNER JOIN BBLEARN.COURSE_MAIN CM ON GM.CRSMAIN_PK1=CM.PK1 INNER JOIN BBLEARN.DATA_SOURCE DS ON DS.PK1=CM.DATA_SRC_PK1
+WHERE 
+CM.COURSE_ID='' AND 
+CC.CNTHNDLR_HANDLE='resource/x-bb-asmt-test-link'
+;
