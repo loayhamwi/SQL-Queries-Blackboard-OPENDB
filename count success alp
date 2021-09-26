@@ -1,76 +1,32 @@
 --عدد الناجحين في برنامج اللغة العربية في الفترة الممتدة من 1 قبراير 2020 الى 16 يونيو 2021
+-- Custom report tocalculate the total number of students completed the Arabic Program successfully
+
 SELECT COUNT(T1.USER_ID),T1.course_id FROM
-
-(select  U.USER_ID, CM.COURSE_ID --,ME, U.LASTNAME,U.EMAIL,CM.COURSE_ID,GM.TITLE, GGC.POSSIBLE,GGC.SCORE AS AVERAGE_SCORE
-from BBLEARN.GRADEBOOK_GRADE_CALC GGC 
-JOIN  BBLEARN.GRADEBOOK_MAIN GM ON GM.PK1=GGC.GRADEBOOK_MAIN_PK1
-JOIN BBLEARN.COURSE_USERS CU ON CU.PK1=GGC.COURSE_USERS_PK1
-JOIN BBLEARN.COURSE_MAIN CM ON CM.PK1=CU.CRSMAIN_PK1
-JOIN BBLEARN.USERS U ON U.PK1=CU.USERS_PK1
-where 
---(cm.course_id like 'ENG-001-%-202020' OR  cm.course_id like 'ENG-003-%-202020') AND 
---CM.course_id='L6' and 
-GM.CALCULATED_IND='T'  AND
-CU.ROLE='S'AND 
-
-CU.ROW_STATUS=0 --and
---cm.row_status=0 AND
---CM.DATA_SRC_PK1='31445' AND 
---U.DATA_SRC_PK1!='496'
-AND GGC.SCORE>59
-and
-CM.course_id in
-('L0',
-'L1',
-'L2',
-'L3',
-'L4',
-'L5',
-'L6',
-'L7',
-'L8',
-'L9',
-'L10',
-'L11',
-'L12',
-'L13',
-'L14',
-'L15',
-'L16'
-) and CM.DATA_SRC_PK1=2
---group by cm.course_id
+(
+  select  U.USER_ID, CM.COURSE_ID 
+  from BBLEARN.GRADEBOOK_GRADE_CALC GGC 
+  JOIN  BBLEARN.GRADEBOOK_MAIN GM ON GM.PK1=GGC.GRADEBOOK_MAIN_PK1
+  JOIN BBLEARN.COURSE_USERS CU ON CU.PK1=GGC.COURSE_USERS_PK1
+  JOIN BBLEARN.COURSE_MAIN CM ON CM.PK1=CU.CRSMAIN_PK1
+  JOIN BBLEARN.USERS U ON U.PK1=CU.USERS_PK1
+  where 
+  GM.CALCULATED_IND='T'AND CU.ROLE='S'AND 
+  CU.ROW_STATUS=0 AND GGC.SCORE>59 AND
+  CM.course_id in ('L0','L1','L2','L3','L4','L5','L6','L7','L8','L9','L10','L11','L12','L13','L14','L15','L16') and CM.DATA_SRC_PK1=2
 ) T1
-
 INNER JOIN
-(SELECT  u.user_id,cm.course_id--,gm.title, gm.possible,gg.average_score,gg.LAST_ATTEMPT_DATE
-FROM bblearn.gradebook_grade gg
-JOIN bblearn.gradebook_main gm ON gm.pk1 = gg.gradebook_main_pk1
-JOIN bblearn.course_users cu ON gg.course_users_pk1 = cu.pk1
-JOIN bblearn.course_main cm ON cm.pk1 = gm.crsmain_pk1
-JOIN bblearn.users u ON u.pk1 = cu.users_pk1
-WHERE
---cm.course_id='L13'  and
-gg.LAST_ATTEMPT_DATE  BETWEEN '01-FEB-20' AND '16-JUN-21' AND
-(gm.POSSIBLE=34 OR gm.POSSIBLE=28) 
-AND 
-CM.course_id in
-('L0',
-'L1',
-'L2',
-'L3',
-'L4',
-'L5',
-'L6',
-'L7',
-'L8',
-'L9',
-'L10',
-'L11',
-'L12',
-'L13',
-'L14',
-'L15',
-'L16'
-))T2 ON (T1.USER_ID=T2.USER_ID AND T1.COURSE_ID=T2.COURSE_ID)
+(
+  SELECT  u.user_id,cm.course_id--,gm.title, gm.possible,gg.average_score,gg.LAST_ATTEMPT_DATE
+  FROM bblearn.gradebook_grade gg
+  JOIN bblearn.gradebook_main gm ON gm.pk1 = gg.gradebook_main_pk1
+  JOIN bblearn.course_users cu ON gg.course_users_pk1 = cu.pk1
+  JOIN bblearn.course_main cm ON cm.pk1 = gm.crsmain_pk1
+  JOIN bblearn.users u ON u.pk1 = cu.users_pk1
+  WHERE
+  gg.LAST_ATTEMPT_DATE  BETWEEN '01-FEB-20' AND '16-JUN-21' AND
+  (gm.POSSIBLE=34 OR gm.POSSIBLE=28) AND 
+  CM.course_id in ('L0','L1','L2','L3','L4','L5','L6','L7','L8','L9','L10','L11','L12','L13','L14','L15','L16')
+ )T2 ON (T1.USER_ID=T2.USER_ID AND T1.COURSE_ID=T2.COURSE_ID)
+ 
 GROUP BY T1.course_id
- ;
+;
