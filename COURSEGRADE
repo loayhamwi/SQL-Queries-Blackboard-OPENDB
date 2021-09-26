@@ -1,12 +1,18 @@
 -- Get Blackboard Course Grades. Blackboard original experience
 
-SELECT u.user_id,u.FIRSTNAME,u.LASTNAME,cm.course_id,cm.COURSE_NAME,  
-gm.title,possible,average_score 
-FROM bblearn.gradebook_grade gg 
-JOIN bblearn.gradebook_main gm ON gm.pk1 = gg.gradebook_main_pk1 
-JOIN bblearn.course_users cu ON gg.course_users_pk1 = cu.pk1 
-JOIN bblearn.course_main cm ON cm.pk1 = gm.crsmain_pk1 
-JOIN bblearn.users u ON u.pk1 = cu.users_pk1 
-WHERE (cm.course_id like 'ENG-001-%-202020' or cm.course_id like 'ENG-003-%-202020') 
-AND cu.ROLE like 'S' 
-ORDER BY cm.COURSE_ID,u.user_id;
+SELECT     CU.PK1 AS ENROLMENTS_ID,
+           DS.BATCH_UID as SEMESTER,
+           CM.PK1 AS CRN,
+           u.pk1 as STUDENT_ID,
+           gm.title,possible,
+           average_score AS SCORE,
+           GM.SCORABLE_IND
+FROM       bblearn.gradebook_grade gg
+INNER JOIN bblearn.gradebook_main gm ON gm.pk1 = gg.gradebook_main_pk1
+INNER JOIN bblearn.course_users cu ON gg.course_users_pk1 = cu.pk1
+INNER JOIN bblearn.course_main cm ON cm.pk1 = gm.crsmain_pk1
+INNER JOIN bblearn.users u ON u.pk1 = cu.users_pk1
+INNER JOIN BBLEARN.DATA_SOURCE ds on CM.DATA_SRC_PK1=ds.pk1
+WHERE 
+CM.COURSE_ID like 'ACCT-490-30170-201930' 
+ORDER BY CM.COURSE_ID,u.user_id;
