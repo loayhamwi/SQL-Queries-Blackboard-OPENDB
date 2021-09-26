@@ -1,0 +1,7 @@
+--Calculate Blackboard course size Blackboard Learn original experience 
+
+select pk1,
+ROUND(BBLEARN.COURSE_SIZE.SIZE_COURSEFILES/1024/1024,3),
+ROUND(BBLEARN.COURSE_SIZE.SIZE_LEGACYFILES/1024/1024,3),
+ROUND(BBLEARN.COURSE_SIZE.SIZE_PROTECTEDFILES/1024/1024,3)
+from bblearn.course_size where CRSMAIN_PK1='29226';
