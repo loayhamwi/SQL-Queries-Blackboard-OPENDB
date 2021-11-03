@@ -1,0 +1,47 @@
+"select t1.*,t2.EXAM_TITLE,t2.CURRENT_GRADE,t2.POSSIBLE_GRADE,t2.ATTEMPT_STATUS,T2.SUBMITTED_DATE,T2.STARTED_DATE,T2.Time_Elapsed 
+from  
+(SELECT u.FIRSTNAME,u.LASTNAME,u.user_id,u.AVAILABLE_IND AS Available_in_System,cm.course_id,cm.COURSE_NAME 
+FROM  
+           BBLEARN.USERS U  
+INNER JOIN BBLEARN.COURSE_USERS CU ON U.PK1=CU.USERS_PK1 
+INNER JOIN BBLEARN.COURSE_MAIN CM ON CU.CRSMAIN_PK1=CM.PK1 
+WHERE  
+cu.ROLE='S' AND  
+cm.course_id LIKE 'EXAM-%-202110' 
+AND cm.DATA_SRC_PK1=31508) t1 
+left join 
+( 
+SELECT u.FIRSTNAME,u.LASTNAME,u.user_id,u.AVAILABLE_IND AS Available_in_System,cm.course_id,cm.COURSE_NAME, 
+gm.TITLE AS EXAM_TITLE,TRUNC(BBLEARN.attempt.GRADE,2) AS CURRENT_GRADE, 
+gm.POSSIBLE AS POSSIBLE_GRADE, 
+(CASE BBLEARN.attempt.STATUS  
+WHEN 9 THEN 'NEEDS_MORE_GRADING' 
+WHEN 8 THEN 'IN_MORE_PROGRESS' 
+when 7 THEN 'COMPLETED' 
+when 6 THEN 'NEEDS_GRADING' 
+when 5 THEN 'CANCELLED' 
+when 4 THEN 'SUSPENDED' 
+when 3 THEN 'IN_PROGRESS' 
+when 2 THEN 'ABANDONED' 
+when 1 THEN 'NOT_ATTEMPTED' 
+end) AS ATTEMPT_STATUS, 
+TO_CHAR(BBLEARN.attempt.ATTEMPT_DATE,'DD-MON-YYYY HH24:MI:SS') AS SUBMITTED_DATE, 
+TO_CHAR(BBLEARN.attempt.DATE_ADDED,'DD-MON-YYYY HH24:MI:SS') AS STARTED_DATE, 
+TRUNC((BBLEARN.attempt.ATTEMPT_DATE -BBLEARN.attempt.DATE_ADDED)*1440,0) AS Time_Elapsed 
+FROM BBLEARN.attempt 
+JOIN BBLEARN.gradebook_grade gg ON attempt.gradebook_grade_pk1 = gg.pk1 
+JOIN BBLEARN.gradebook_main gm ON gm.pk1 = gg.gradebook_main_pk1 
+JOIN BBLEARN.course_users cu ON gg.course_users_pk1 = cu.pk1 
+JOIN BBLEARN.course_main cm ON cm.pk1 = gm.crsmain_pk1 
+JOIN BBLEARN.users u ON u.pk1 = cu.users_pk1 
+WHERE  
+
+
+cu.ROLE='S' AND  
+cm.course_id LIKE 'EXAM-%-202110' 
+AND cm.DATA_SRC_PK1=31508 
+AND gm.TITLE NOT LIKE 'CRN' 
+ 
+ORDER BY u.user_id 
+) t2 
+on t1.user_id=t2.user_id and t1.course_id=t2.course_id"
