@@ -1,0 +1,25 @@
+SELECT course_main.course_name, course_main.course_id, 
+course_assessment.MULTIPLE_ATTEMPTS_IND, 
+course_assessment.UNLIMITED_ATTEMPTS_IND, 
+course_assessment.PASSWORD_IND, 
+course_assessment.EXTERNAL_WINDOW_IND, 
+course_assessment.FORCE_COMPLETION_IND, 
+course_assessment.NO_BACKTRACK_IND, 
+course_assessment.RANDOMIZE_QUESTIONS_IND, 
+course_assessment.TIME_LIMIT, 
+course_assessment.ATTEMPT_COUNT, 
+course_assessment.ALLOW_LATE_SUBMISSION_IND, 
+course_assessment.FEEDBACK_SETTINGS, 
+--course_assessment.RANDOMIZE_ANSWERS_IND,
+course_contents.title,
+course_contents.AVAILABLE_IND,
+TO_CHAR(course_contents.DTCREATED,'DD-MM-YYYY HH24:MI:SS') AS DATE_CREATED,
+TO_CHAR(course_contents.START_DATE,'DD-MM-YYYY HH24:MI:SS') AS AVAILABILITY_START_DATE,
+TO_CHAR(course_contents.END_DATE,'DD-MM-YYYY HH24:MI:SS') AS AVAILABILITY_END_DATE
+FROM BBLEARN.course_main
+JOIN BBLEARN.course_contents ON COURSE_MAIN.PK1 = COURSE_CONTENTS.CRSMAIN_PK1
+JOIN BBLEARN.link ON link.course_contents_pk1 = course_contents.pk1
+JOIN BBLEARN.course_assessment ON link.link_source_table = 'COURSE_ASSESSMENT' and link.link_source_pk1 = course_assessment.pk1
+WHERE 
+--course_main.course_id LIKE 'FINAL-EXAM-CI-003-F-202110'
+COURSE_MAIN.DATA_SRC_PK1=31535;
