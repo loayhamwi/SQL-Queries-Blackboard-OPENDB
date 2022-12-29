@@ -1,0 +1,41 @@
+select t1.*,t2.possible, t2.average_score from
+(
+SELECT distinct u.user_id,U.FIRSTNAME,U.MIDDLENAME,U.LASTNAME ,U.EMAIL,cm.course_id,gm.title,VISIBLE_IN_BOOK_IND
+FROM 
+bblearn.gradebook_main gm 
+JOIN bblearn.course_main cm ON cm.pk1 = gm.crsmain_pk1
+join bblearn.course_users cu on cu.CRSMAIN_PK1=cm.PK1
+JOIN bblearn.users u ON u.pk1 = cu.users_pk1
+WHERE
+cm.course_id in (
+)
+--and u.user_id like 'd210068091'
+and gm.DELETED_IND='N' 
+and gm.CALCULATED_IND='N'
+)t1 
+left join 
+(SELECT u.user_id,U.FIRSTNAME,U.MIDDLENAME,U.LASTNAME ,U.EMAIL,cm.course_id,gm.title, gm.possible,gg.average_score
+FROM bblearn.gradebook_grade gg
+JOIN bblearn.gradebook_main gm ON gm.pk1 = gg.gradebook_main_pk1
+JOIN bblearn.course_users cu ON gg.course_users_pk1 = cu.pk1
+JOIN bblearn.course_main cm ON cm.pk1 = gm.crsmain_pk1
+JOIN bblearn.users u ON u.pk1 = cu.users_pk1
+WHERE
+cm.course_id in() and
+--U.USER_ID LIKE 'd210068091' AND
+U.DATA_SRC_PK1 !='496' --to execlude the student preview accounts
+)t2 on (t1.user_id=t2.user_id and t1.course_id=t2.course_id and t1.title=t2.title)
+UNION
+select U.USER_ID,U.FIRSTNAME,U.MIDDLENAME, U.LASTNAME,U.EMAIL,CM.COURSE_ID,GM.TITLE,'Y' as VISIBLE_IN_BOOK_IND, GGC.POSSIBLE,GGC.SCORE AS AVERAGE_SCORE
+from BBLEARN.GRADEBOOK_GRADE_CALC GGC 
+JOIN  BBLEARN.GRADEBOOK_MAIN GM ON GM.PK1=GGC.GRADEBOOK_MAIN_PK1
+JOIN BBLEARN.COURSE_USERS CU ON CU.PK1=GGC.COURSE_USERS_PK1
+JOIN BBLEARN.COURSE_MAIN CM ON CM.PK1=CU.CRSMAIN_PK1
+JOIN BBLEARN.USERS U ON U.PK1=CU.USERS_PK1
+where 
+cm.course_id in ()
+GM.CALCULATED_IND <> 'N'  AND
+CU.ROLE='S'AND 
+--U.USER_ID LIKE 'd210068091' AND
+U.DATA_SRC_PK1!='496'
+;
