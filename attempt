@@ -1,0 +1,11 @@
+SELECT u.firstname,u.lastname,u.user_id,cm.course_id, gm.title, possible,grade,
+TO_CHAR(bblearn.attempt.DATE_ADDED,'DD-MM-YYYY HH24:MI:SS')
+
+  FROM bblearn.attempt
+JOIN bblearn.gradebook_grade gg ON attempt.gradebook_grade_pk1 = gg.pk1
+JOIN bblearn.gradebook_main gm ON gm.pk1 = gg.gradebook_main_pk1
+JOIN bblearn.course_users cu ON gg.course_users_pk1 = cu.pk1
+JOIN bblearn.course_main cm ON cm.pk1 = gm.crsmain_pk1
+JOIN bblearn.users u ON u.pk1 = cu.users_pk1
+WHERE u.user_id = 's190325608' AND cm.course_id like  'LAW-415-24381-202220' --and cm.DATA_SRC_PK1='31592'
+;
