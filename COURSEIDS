@@ -1,0 +1,10 @@
+select
+
+cm.COURSE_ID
+
+from BBLEARN.COURSE_MAIN cm
+inner join BBLEARN.DATA_SOURCE ds on ds.pk1=cm.DATA_SRC_PK1
+where 
+ds.BATCH_UID LIKE '%202220_COURSES' -- here write the data source key of courses
+;
+
