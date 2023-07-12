@@ -1,0 +1,103 @@
+SELECT DISTINCT           
+T1.EXAM_DATE,           
+T1.EXAM_TIME,           
+SUBSTR(T1.COURSE_ID,12,LENGTH(T1.COURSE_ID)-18) AS EXAM_NAME,
+T1.COURSE_ID,
+T1.LASTNAME,
+T1.FIRSTNAME,
+T1.user_id AS USERNAME,
+T4.CRN,t3.BRANCH,
+T2.ATTEMPT_STATUS,
+T2.CURRENT_GRADE,
+T2.POSSIBLE_GRADE,
+T2.STARTED_DATE,
+T2.SUBMITTED_DATE,
+T2.Time_Elapsed,
+T2.IP
+FROM                    
+(                    
+  SELECT u.FIRSTNAME,u.LASTNAME,u.user_id,u.AVAILABLE_IND AS Available_in_System,cm.course_id,cm.COURSE_NAME,TO_CHAR(CC.START_DATE,'MM/DD/YYYY') AS EXAM_DATE,           
+        TO_CHAR(CC.START_DATE,'HH24:MI') AS EXAM_TIME,CC.CNTHNDLR_HANDLE           
+  FROM  BBLEARN.USERS U                     
+  JOIN  BBLEARN.COURSE_USERS CU ON U.PK1=CU.USERS_PK1                    
+  JOIN  BBLEARN.COURSE_MAIN CM ON CU.CRSMAIN_PK1=CM.PK1           
+  JOIN  BBLEARN.COURSE_CONTENTS CC ON CC.CRSMAIN_PK1=cm.PK1           
+  WHERE cu.ROLE='S' AND     u.data_src_pk1 not like '496' and  u.data_src_pk1 not like '2' AND
+      
+CM.COURSE_ID IN       
+(
+)       
+      
+AND CC.CNTHNDLR_HANDLE='resource/x-bb-toollink'            
+  ORDER BY u.user_id           
+) T1                    
+LEFT JOIN                
+(           
+  SELECT DISTINCT u.user_id,CM.COURSE_ID,BBLEARN.attempt.GRADE as CRN                 
+  FROM BBLEARN.attempt                 
+  JOIN BBLEARN.gradebook_grade gg ON attempt.gradebook_grade_pk1 = gg.pk1                 
+  JOIN BBLEARN.gradebook_main gm ON gm.pk1 = gg.gradebook_main_pk1                 
+  JOIN BBLEARN.course_users cu ON gg.course_users_pk1 = cu.pk1                 
+  JOIN BBLEARN.course_main cm ON cm.pk1 = gm.crsmain_pk1                 
+  JOIN BBLEARN.users u ON u.pk1 = cu.users_pk1                 
+  WHERE cu.ROLE='S' AND   u.data_src_pk1 not like '2' AND    u.data_src_pk1 not like '496' and
+      
+CM.COURSE_ID IN       
+(
+)       
+AND (gm.title  LIKE 'CRN')                
+ORDER BY u.user_id           
+)T4 on t1.user_id=t4.user_id and t4.course_id=t1.COURSE_ID               
+LEFT JOIN                    
+(                    
+   SELECT DISTINCT u.FIRSTNAME,u.LASTNAME,u.user_id,u.AVAILABLE_IND AS Available_in_System,cm.course_id,cm.COURSE_NAME,gm.TITLE AS EXAM_TITLE,BBLEARN.attempt.GRADE as CURRENT_GRADE,                
+                   gm.POSSIBLE AS POSSIBLE_GRADE,                    
+                   (CASE BBLEARN.attempt.STATUS                     
+                    WHEN 9 THEN 'NEEDS_MORE_GRADING'                    
+                    WHEN 8 THEN 'IN_MORE_PROGRESS'                    
+                    WHEN 7 THEN 'COMPLETED'                    
+                    WHEN 6 THEN 'NEEDS_GRADING'                    
+                    WHEN 5 THEN 'CANCELLED'                    
+                    WHEN 4 THEN 'SUSPENDED'                    
+                    WHEN 3 THEN 'IN_PROGRESS'                    
+                    WHEN 2 THEN 'ABANDONED'                    
+                    WHEN 1 THEN 'NOT_ATTEMPTED'                    
+                    end) AS ATTEMPT_STATUS,                    
+                    GL.MODIFIER_IPADDRESS as IP,               
+                    TO_CHAR(BBLEARN.attempt.ATTEMPT_DATE,'DD-MM-YYYY HH24:MI') AS SUBMITTED_DATE,                    
+                    TO_CHAR(BBLEARN.attempt.DATE_ADDED,'DD-MM-YYYY HH24:MI') AS STARTED_DATE,                    
+                    TRUNC((BBLEARN.attempt.ATTEMPT_DATE -BBLEARN.attempt.DATE_ADDED)*1440,0) AS Time_Elapsed           
+  FROM BBLEARN.attempt                    
+  right JOIN BBLEARN.gradebook_grade gg ON attempt.gradebook_grade_pk1 = gg.pk1                    
+  JOIN BBLEARN.gradebook_main gm ON gm.pk1 = gg.gradebook_main_pk1                    
+  JOIN BBLEARN.course_users cu ON gg.course_users_pk1 = cu.pk1                    
+  JOIN BBLEARN.course_main cm ON cm.pk1 = gm.crsmain_pk1                    
+  JOIN BBLEARN.users u ON u.pk1 = cu.users_pk1                    
+ left JOIN BBLEARN.GRADEBOOK_LOG GL ON GL.GRADEBOOK_MAIN_PK1=GM.PK1 AND GL.USER_PK1=U.PK1                
+  WHERE    cu.ROLE='S' AND   u.data_src_pk1 not like '2' AND    u.data_src_pk1 not like '496' and
+     
+CM.COURSE_ID IN       
+(
+)       
+        
+AND (gm.TITLE NOT LIKE 'CRN' and gm.title NOT LIKE 'Student_Branch' and gm.title not like 'Branch' AND gm.title not like 'BRANCH' and gm.title not like 'Gender' and gm.title not like 'GENDER')                    
+           and (GL.MODIFIER_ROLE='S' OR   GL.MODIFIER_ROLE IS NULL)           
+  ORDER BY u.user_id                    
+) T2 on t1.user_id=t2.user_id and t1.course_id=t2.course_id                    
+LEFT JOIN            
+(           
+   SELECT DISTINCT u.user_id,BBLEARN.attempt.GRADE as BRANCH ,cm.course_id               
+   FROM BBLEARN.attempt                    
+   JOIN BBLEARN.gradebook_grade gg ON attempt.gradebook_grade_pk1 = gg.pk1                    
+   JOIN BBLEARN.gradebook_main gm ON gm.pk1 = gg.gradebook_main_pk1                    
+   JOIN BBLEARN.course_users cu ON gg.course_users_pk1 = cu.pk1                    
+   JOIN BBLEARN.course_main cm ON cm.pk1 = gm.crsmain_pk1                    
+   JOIN BBLEARN.users u ON u.pk1 = cu.users_pk1                    
+   WHERE  cu.ROLE='S' AND       u.data_src_pk1 not like '2' AND u.data_src_pk1 not like '496' and
+CM.COURSE_ID IN       
+(  
+)       
+AND (gm.title  LIKE 'Branch' or gm.title like 'BRANCH')               
+   ORDER BY u.user_id       
+) T3 on t1.user_id=t3.user_id and t1.course_id=t3.course_id       
+ORDER BY T1.EXAM_DATE,T1.EXAM_TIME,T1.COURSE_ID,T4.CRN,T1.user_id;
