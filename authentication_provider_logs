@@ -1,0 +1,13 @@
+SELECT distinct 
+        USERNAME,
+        ap.NAME,
+        to_char(LOG_DATE,'DD-MON-YY'),
+        u.DATA_SRC_PK1
+FROM 
+           bblearn.AUTH_PROVIDER_LOG apl
+INNER JOIN bblearn.AUTH_PROVIDER ap ON ap.pk1 = apl.auth_provider_pk1
+INNER JOIN BBLEARN.USERS u on u.USER_ID=apl.USERNAME
+WHERE LOG_DATE between TRUNC(SYSDATE - 6) AND TRUNC(SYSDATE) - 1/86400
+--and USERNAME  like 'l.hamwi' 
+AND u.DATA_SRC_PK1=42
+AND EVENT_TYPE = 0 ;
